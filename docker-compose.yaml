@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  mongo:
+    image: "mongo:4.2.7-bionic"
+    volumes:
+      - mongo_data_container:/data/db
+    networks:
+      - mongo-network
+    ports:
+      - "27017:27017"
+    restart: on-failure
+
+volumes:
+  mongo_data_container:
+
+networks:
+    mongo-network:
+      driver: bridge
