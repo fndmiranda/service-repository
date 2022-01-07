@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SQLALCHEMY_DATABASE_URI_TESTING="sqlite+aiosqlite:///./tests/testing.db"
-
 outdated:
 	@pip list --outdated
 

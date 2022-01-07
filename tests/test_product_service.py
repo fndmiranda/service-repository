@@ -19,7 +19,6 @@ async def test_product_service_create_product(app, product_data_one, motor):
     # pprint.pp(app["motor"])
     pprint.pp(motor)
 
-
     # async with async_session() as session:
     #     song = await SongService(db=session).create(
     #         schema_in=SongCreate(**song_data_one)

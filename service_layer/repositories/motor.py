@@ -54,9 +54,7 @@ class AbstractRepositoryMotor(RepositoryInterface):
 
     async def get(self, **kwargs):
         """Get one instance by filter."""
-        query = await self.db.execute(
-            select(self.model).filter_by(**kwargs)
-        )
+        query = await self.db.execute(select(self.model).filter_by(**kwargs))
         instance = query.scalar_one_or_none()
         await self.db.commit()
 

@@ -1,6 +1,5 @@
 import pytest
 
-from tests.database import async_session
 from tests.song.models import SongCreate
 from tests.song.services import SongService
 
@@ -22,8 +21,8 @@ def song_data_two():
 
 
 @pytest.fixture
-async def song_one(song_data_one):
-    async with async_session() as session:
+async def song_one(sqlalchemy, song_data_one):
+    async with sqlalchemy() as session:
         song = await SongService(db=session).create(
             schema_in=SongCreate(**song_data_one)
         )

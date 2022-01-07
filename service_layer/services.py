@@ -21,7 +21,9 @@ class AbstractService(ServiceInterface):
         Create new entity and returns the saved entity instance.
         """
         create_data = schema_in.dict()
-        instance = await self.repository(db=self.db).create(schema_in=create_data)
+        instance = await self.repository(db=self.db).create(
+            schema_in=create_data
+        )
         return instance
 
     async def update(self, instance: BaseModel, schema_in: BaseModel):
