@@ -9,13 +9,12 @@ homepage = "https://github.com/fndmiranda/service-layer"
 repository = "https://github.com/fndmiranda/service-layer"
 keywords = [
     "service layer", "repository", "patthern", "sqlmodel",
-    "sqlalchemy", "pydantic", "async"
+    "sqlalchemy", "pydantic", "async", "mongodb", "motor"
 ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 pydantic = "^1.9.0"
-fastapi = "^0.70.1"
 SQLAlchemy = "^1.4.29"
 
 [tool.poetry.dev-dependencies]

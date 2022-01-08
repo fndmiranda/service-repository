@@ -1,11 +1,10 @@
-import pprint
-
-from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from service_layer.interfaces import RepositoryInterface
+from service_layer.interfaces.repository import RepositoryInterface
+from service_layer.pagination import apply_pagination
 
 
 class AbstractRepositorySqlalchemy(RepositoryInterface):
@@ -20,10 +19,6 @@ class AbstractRepositorySqlalchemy(RepositoryInterface):
         """Create new object and returns the saved object instance."""
         instance = self.model(**schema_in)
 
-        pprint.pp("********************")
-        pprint.pp("********************")
-        pprint.pp(type(self.db))
-
         self.db.add(instance)
         await self.db.commit()
         await self.db.refresh(instance)
@@ -31,7 +26,7 @@ class AbstractRepositorySqlalchemy(RepositoryInterface):
 
     async def update(self, instance: BaseModel, schema_in: BaseModel):
         """Update a instance."""
-        data = jsonable_encoder(instance)
+        data = instance.dict()
 
         for field in data:
             if field in schema_in:
@@ -49,44 +44,54 @@ class AbstractRepositorySqlalchemy(RepositoryInterface):
 
         return instance
 
-    # async def paginate(
-    #     self,
-    #     page: int = 1,
-    #     items_per_page: int = 15,
-    # ):
-    #     """Common functionality for
-    #     searching, filtering, sorting, and pagination."""
-    #     stmt = select(self.model)
-    #
-    #     # if filter_spec:
-    #     #     stmt = apply_filters(stmt, filter_spec)
-    #     #
-    #     # if sort_spec:
-    #     #     stmt = apply_sort(stmt, sort_spec)
-    #
-    #     if items_per_page == -1:
-    #         items_per_page = None
-    #     elif items_per_page > get_settings().MAX_ITEMS_PER_PAGE:
-    #         items_per_page = get_settings().MAX_ITEMS_PER_PAGE
-    #
-    #     stmt, pagination = await apply_pagination(
-    #         stmt,
-    #         session=self.db,
-    #         model=self.model,
-    #         page_number=page,
-    #         page_size=items_per_page,
-    #     )
-    #
-    #     query = await self.db.execute(stmt)
-    #     await self.db.commit()
-    #
-    #     return {
-    #         "items": query.scalars().all(),
-    #         "per_page": pagination.page_size,
-    #         "num_pages": pagination.num_pages,
-    #         "page": pagination.page_number,
-    #         "total": pagination.total_results,
-    #     }
+    async def delete(self, **kwargs):
+        """Delete one instance by filter."""
+        instance = await self.get(**kwargs)
+        await self.db.delete(instance)
+        await self.db.commit()
+
+    async def count(self, **kwargs):
+        """Count instances by filter."""
+        primary_key = getattr(
+            self.model,
+            self.model.__table__.primary_key.columns_autoinc_first[0].name,
+        )
+
+        stmt = select(self.model)
+
+        query_count = await self.db.execute(
+            stmt.with_only_columns(func.count(primary_key))
+        )
+
+        total = query_count.scalar_one()
+
+        return total
+
+    async def paginate(self, page: int = 1, per_page: int = 15):
+        """Get collection of instances paginated."""
+        stmt = select(self.model)
+
+        if per_page == -1:
+            per_page = None
+
+        stmt, pagination = await apply_pagination(
+            stmt,
+            session=self.db,
+            model=self.model,
+            page_number=page,
+            page_size=per_page,
+        )
+
+        query = await self.db.execute(stmt)
+        await self.db.commit()
+
+        return {
+            "items": query.scalars().all(),
+            "per_page": pagination.page_size,
+            "num_pages": pagination.num_pages,
+            "page": pagination.page_number,
+            "total": pagination.total_results,
+        }
 
     @property
     def model(self):

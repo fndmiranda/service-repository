@@ -1,5 +1,4 @@
 import asyncio
-import pprint
 from typing import Generator
 
 import pytest
@@ -23,14 +22,15 @@ def event_loop(request):
 
 @pytest.fixture()
 async def motor():
-    async_session = AsyncIOMotorClient(
+    client = AsyncIOMotorClient(
         "localhost",
         maxPoolSize=10,
         minPoolSize=10,
         tz_aware=True,
     )
-    session = async_session.get_database("testing")
-    return session
+    await client.drop_database("testing")
+    session = client.get_database("testing")
+    yield session
 
 
 @pytest.fixture()

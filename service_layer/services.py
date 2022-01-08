@@ -1,11 +1,7 @@
-import pprint
-from typing import List
-
-from fastapi import HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from service_layer.interfaces import ServiceInterface
+from service_layer.interfaces.service import ServiceInterface
 
 
 class AbstractService(ServiceInterface):
@@ -34,28 +30,27 @@ class AbstractService(ServiceInterface):
         )
         return instance
 
-    # async def paginate(
-    #     self,
-    #     page: int = 1,
-    #     items_per_page: int = 15,
-    #     filter_spec: List[dict] = None,
-    #     sort_spec: List[str] = None,
-    # ):
-    #     """
-    #     Common functionality for searching, filtering, sorting, and pagination.
-    #     """
-    #     pagination = await self.repository(db=self.db).paginate(
-    #         page=page,
-    #         items_per_page=items_per_page,
-    #         filter_spec=filter_spec,
-    #         sort_spec=sort_spec,
-    #     )
-    #     return pagination
-
     async def get(self, **kwargs):
         """Get one instance by filter."""
         instance = await self.repository(db=self.db).get(**kwargs)
         return instance
+
+    async def delete(self, **kwargs):
+        """Delete one instance by filter."""
+        await self.repository(db=self.db).delete(**kwargs)
+
+    async def count(self, **kwargs):
+        """Count instances by filter."""
+        total = await self.repository(db=self.db).count(**kwargs)
+        return total
+
+    async def paginate(self, page: int = 1, per_page: int = 15):
+        """Get collection of instances paginated."""
+        pagination = await self.repository(db=self.db).paginate(
+            page=page,
+            per_page=per_page,
+        )
+        return pagination
 
     # async def get_or_404(self, **kwargs):
     #     """Get one instance by filter or 404 if not exists."""
@@ -69,12 +64,6 @@ class AbstractService(ServiceInterface):
     #     instance = await self.get_or_404(**kwargs)
     #     instance = await self.update(instance=instance, schema_in=schema_in)
     #     return instance
-
-    async def delete(self, **kwargs):
-        """Delete one instance by filter."""
-        instance = await self.get(**kwargs)
-        await self.db.delete(instance)
-        await self.db.commit()
 
     # async def delete_or_404(self, **kwargs):
     #     """Delete one instance by filter or 404 if not exists."""

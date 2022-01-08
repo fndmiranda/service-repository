@@ -1,65 +1,84 @@
-import pprint
-
 import pytest
 
-from tests.product.models import ProductCreate
+from tests.product.models import ProductCreate, ProductUpdate
 from tests.product.services import ProductService
 
 
 @pytest.mark.asyncio
-async def test_product_service_create_product(app, product_data_one, motor):
+async def test_product_service_create_product(app, motor, product_data_one):
     product = await ProductService(db=motor).create(
         schema_in=ProductCreate(**product_data_one)
     )
 
-    pprint.pp("&&&&&&&&&&&&&&&")
-    pprint.pp("&&&&&&&&&&&&&&&")
-    # pprint.pp(session)
-    pprint.pp(product)
-    # pprint.pp(app["motor"])
-    pprint.pp(motor)
-
-    # async with async_session() as session:
-    #     song = await SongService(db=session).create(
-    #         schema_in=SongCreate(**song_data_one)
-    #     )
-    #
-    # assert getattr(song, "id") is not None
-    # for key, value in song_data_one.items():
-    #     assert getattr(song, key) == song_data_one[key]
+    assert getattr(product, "id") is not None
+    for key, value in product_data_one.items():
+        assert getattr(product, key) == product_data_one[key]
 
 
-# @pytest.mark.asyncio
-# async def test_song_service_update_song(app, song_one, song_data_two):
-#     async with async_session() as session:
-#         song = await SongService(db=session).update(
-#             instance=song_one, schema_in=SongUpdate(**song_data_two)
-#         )
-#     assert song.id == song_one.id
-#     for key, value in song_data_two.items():
-#         assert getattr(song, key) == song_data_two[key]
-#
-#
-# @pytest.mark.asyncio
-# async def test_song_service_get_song(app, song_one):
-#     async with async_session() as session:
-#         song = await SongService(db=session).get(id=song_one.id)
-#     assert song is not None
-#
-#
-# @pytest.mark.asyncio
-# async def test_song_service_delete_song(app, song_one):
-#     async with async_session() as session:
-#         await SongService(db=session).delete(id=song_one.id)
-#     async with async_session() as session:
-#         song = await SongService(db=session).get(id=song_one.id)
-#     assert song is None
-#
-#
-# @pytest.mark.asyncio
-# async def test_song_service_without_repository(app, song_one):
-#     async with async_session() as session:
-#         service = SongService(db=session)
-#         service.repository = None
-#         with pytest.raises(ValueError):
-#             await service.get(id=song_one.id)
+@pytest.mark.asyncio
+async def test_product_service_update_product(
+    app, motor, product_one, product_data_two
+):
+    product = await ProductService(db=motor).update(
+        instance=product_one, schema_in=ProductUpdate(**product_data_two)
+    )
+    assert product_one.id == product.id
+    for key, value in product_data_two.items():
+        assert getattr(product, key) == product_data_two[key]
+
+
+@pytest.mark.asyncio
+async def test_product_service_get_product(app, motor, product_one):
+    product = await ProductService(db=motor).get(_id=product_one.id)
+    assert product is not None
+
+
+@pytest.mark.asyncio
+async def test_product_service_get_product_paginate(
+    app, motor, product_data_one
+):
+    count = 15
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    pagination = await ProductService(db=motor).paginate(page=1, per_page=5)
+
+    assert pagination["per_page"] == 5
+    assert len(pagination["items"]) == 5
+    assert pagination["num_pages"] == 3
+    assert pagination["page"] == 1
+    assert pagination["total"] == 15
+
+
+@pytest.mark.asyncio
+async def test_product_service_delete_product(app, motor, product_one):
+    await ProductService(db=motor).delete(_id=product_one.id)
+    product = await ProductService(db=motor).get(_id=product_one.id)
+    assert product is None
+
+
+@pytest.mark.asyncio
+async def test_product_service_count_product(app, motor, product_data_one):
+    count = 10
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    total = await ProductService(db=motor).count()
+
+    assert total == count
