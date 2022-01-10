@@ -1,8 +1,8 @@
-from service_layer.repositories.motor import AbstractRepositoryMotor
+from service_layer.repositories.motor import RepositoryMotor
 from tests.product.models import Product
 
 
-class ProductRepository(AbstractRepositoryMotor):
+class ProductRepository(RepositoryMotor):
     """Class representing the product repository."""
 
     _model = Product
