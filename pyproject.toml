@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "service-layer"
-version = "0.1.1"
+version = "0.1.2"
 description = "Simple service layer with repository to SQLAlchemy or MongoDB"
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"

@@ -1,8 +1,8 @@
-from service_layer.repositories.sqlalchemy import AbstractRepositorySqlalchemy
+from service_layer.repositories.sqlalchemy import RepositorySqlalchemy
 from tests.song.models import Song
 
 
-class SongRepository(AbstractRepositorySqlalchemy):
+class SongRepository(RepositorySqlalchemy):
     """Class representing the song repository."""
 
     _model = Song

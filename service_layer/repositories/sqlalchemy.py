@@ -7,7 +7,7 @@ from service_layer.interfaces.repository import RepositoryInterface
 from service_layer.pagination import apply_pagination
 
 
-class AbstractRepositorySqlalchemy(RepositoryInterface):
+class RepositorySqlalchemy(RepositoryInterface):
     """Class representing the SQLAlchemy abstract repository."""
 
     _model = None
