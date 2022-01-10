@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "service-layer"
-version = "0.1.0"
-description = "Simple service layer with repository to SQLAlchemy and Motor"
+version = "0.1.1"
+description = "Simple service layer with repository to SQLAlchemy or MongoDB"
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"
 readme = "README.md"
@@ -27,8 +27,6 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pydantic = "^1.9.0"
-SQLAlchemy = "^1.4.29"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
