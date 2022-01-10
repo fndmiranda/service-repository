@@ -80,30 +80,6 @@ class AbstractRepositoryMotor(RepositoryInterface):
 
         return response
 
-        # stmt = select(self.model)
-        #
-        # if per_page == -1:
-        #     per_page = None
-        #
-        # stmt, pagination = await apply_pagination(
-        #     stmt,
-        #     session=self.db,
-        #     model=self.model,
-        #     page_number=page,
-        #     page_size=per_page,
-        # )
-        #
-        # query = await self.db.execute(stmt)
-        # await self.db.commit()
-        #
-        # return {
-        #     "items": query.scalars().all(),
-        #     "per_page": pagination.page_size,
-        #     "num_pages": pagination.num_pages,
-        #     "page": pagination.page_number,
-        #     "total": pagination.total_results,
-        # }
-
     @property
     def model(self):
         if self._model is None:

@@ -7,9 +7,22 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/fndmiranda/service-layer"
 repository = "https://github.com/fndmiranda/service-layer"
-keywords = [
-    "service layer", "repository", "patthern", "sqlmodel",
-    "sqlalchemy", "pydantic", "async", "mongodb", "motor"
+classifiers = [
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Database",
+    "Topic :: Database :: Database Engines/Servers",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
 ]
 
 [tool.poetry.dependencies]
