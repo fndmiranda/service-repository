@@ -1,8 +1,8 @@
-from service_layer.services import AbstractService
+from service_layer.services import ServiceLayer
 from tests.product.repositories import ProductRepository
 
 
-class ProductService(AbstractService):
+class ProductService(ServiceLayer):
     """Class representing the product service."""
 
     _repository = ProductRepository
