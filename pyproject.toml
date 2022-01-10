@@ -4,15 +4,30 @@ version = "0.1.0"
 description = "Simple service layer with repository to SQLAlchemy and Motor"
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"
-readme = "README.rst"
+readme = "README.md"
 homepage = "https://github.com/fndmiranda/service-layer"
 repository = "https://github.com/fndmiranda/service-layer"
-keywords = ["service", "layer", "repository", "patthern"]
+classifiers = [
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: System Administrators",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Database",
+    "Topic :: Database :: Database Engines/Servers",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 pydantic = "^1.9.0"
-fastapi = "^0.70.1"
 SQLAlchemy = "^1.4.29"
 
 [tool.poetry.dev-dependencies]
@@ -33,9 +48,6 @@ multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
-
-# isort service_layer tests --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses --check-only
-# isort service_layer tests --multi-line=3 --trailing-comma --force-grid-wrap=0 --use-parentheses
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
