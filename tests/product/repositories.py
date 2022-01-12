@@ -1,4 +1,4 @@
-from service_layer.repositories.motor import RepositoryMotor
+from service_repository.repositories.motor import RepositoryMotor
 from tests.product.models import Product
 
 

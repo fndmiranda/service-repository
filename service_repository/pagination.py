@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel.main import SQLModel
 
-from service_layer.exceptions import InvalidPage
+from service_repository.exceptions import InvalidPage
 
 
 async def apply_pagination(
