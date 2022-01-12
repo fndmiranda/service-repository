@@ -1,6 +1,6 @@
 import pytest
 
-from service_layer import __version__
+from service_repository import __version__
 
 
 @pytest.mark.asyncio

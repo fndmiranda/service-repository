@@ -1,4 +1,4 @@
-from service_layer.repositories.sqlalchemy import RepositorySqlalchemy
+from service_repository.repositories.sqlalchemy import RepositorySqlalchemy
 from tests.song.models import Song
 
 

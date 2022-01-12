@@ -3,8 +3,8 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from service_layer.interfaces.repository import RepositoryInterface
-from service_layer.pagination import apply_pagination
+from service_repository.interfaces.repository import RepositoryInterface
+from service_repository.pagination import apply_pagination
 
 
 class RepositorySqlalchemy(RepositoryInterface):

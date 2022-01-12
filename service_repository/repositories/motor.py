@@ -2,7 +2,7 @@ import math
 
 from pydantic import BaseModel
 
-from service_layer.interfaces.repository import RepositoryInterface
+from service_repository.interfaces.repository import RepositoryInterface
 
 
 class RepositoryMotor(RepositoryInterface):

@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "service-layer"
-version = "0.1.4"
+name = "service-repository"
+version = "0.1.0"
 description = "Simple service layer with repository to SQLAlchemy or MongoDB"
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/fndmiranda/service-layer"
-repository = "https://github.com/fndmiranda/service-layer"
+homepage = "https://github.com/fndmiranda/service-repository"
+repository = "https://github.com/fndmiranda/service-repository"
 classifiers = [
     "Framework :: AsyncIO",
     "Intended Audience :: Developers",
