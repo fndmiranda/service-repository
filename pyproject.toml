@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "service-repository"
-version = "0.1.0"
+version = "0.1.1"
 description = "Simple service layer with repository to SQLAlchemy or MongoDB"
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"
@@ -40,6 +40,7 @@ bandit = "^1.7.1"
 pytest-cov = "^3.0.0"
 pytest-deadfixtures = "^2.2.1"
 motor = "^2.5.1"
+safety = "^1.10.3"
 
 [tool.isort]
 multi_line_output = 3

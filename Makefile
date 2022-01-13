@@ -31,7 +31,7 @@ check-bandit:
 	@bandit -r -f custom -x tests service_repository tests
 
 check-safety:
-	safety check --file=requirements/production.txt
+	@poetry export --without-hashes -f requirements.txt | safety check --full-report --stdin
 
 check-dead-fixtures:
 	@pytest --dead-fixtures

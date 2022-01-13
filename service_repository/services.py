@@ -1,16 +1,15 @@
 from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from service_repository.interfaces.service import ServiceInterface
 
 
-class ServiceLayer(ServiceInterface):
+class BaseService(ServiceInterface):
     """Class representing the abstract service."""
 
     _repository = None
 
-    def __init__(self, db: AsyncSession) -> None:
-        self.db: AsyncSession = db
+    def __init__(self, db) -> None:
+        self.db = db
 
     async def create(self, schema_in: BaseModel):
         """

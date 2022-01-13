@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from service_repository.interfaces.repository import RepositoryInterface
 
 
-class RepositoryMotor(RepositoryInterface):
+class BaseRepositoryMotor(RepositoryInterface):
     """Class representing the motor abstract repository."""
 
     _model = None
