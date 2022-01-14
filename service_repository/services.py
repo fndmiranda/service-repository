@@ -43,8 +43,8 @@ class BaseService(ServiceInterface):
         total = await self.repository(db=self.db).count(**kwargs)
         return total
 
-    async def paginate(self, page: int = 1, per_page: int = 15):
-        """Get collection of instances paginated."""
+    async def paginate(self, page: int = 1, per_page: int = 15, **kwargs):
+        """Get collection of instances paginated by filter."""
         pagination = await self.repository(db=self.db).paginate(
             page=page,
             per_page=per_page,
