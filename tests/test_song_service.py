@@ -89,12 +89,3 @@ async def test_song_service_count_song(app, sqlalchemy, song_data_one):
         total = await SongService(db=session).count()
 
     assert total == count
-
-
-@pytest.mark.asyncio
-async def test_song_service_without_repository(app, sqlalchemy, song_one):
-    async with sqlalchemy() as session:
-        service = SongService(db=session)
-        service.repository = None
-        with pytest.raises(ValueError):
-            await service.get(id=song_one.id)

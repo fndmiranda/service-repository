@@ -279,7 +279,7 @@ class BaseService(ServiceInterface):
 
     @property
     def repository(self):
-        if self.Config.repository is None:
+        if not hasattr(self.Config, "repository"):
             raise ValueError("Repository is None, set repository in Config")
         return self.Config.repository
 

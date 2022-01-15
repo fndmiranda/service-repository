@@ -79,7 +79,7 @@ class BaseRepositoryMotor(RepositoryInterface):
 
     @property
     def model(self) -> BaseModel:
-        if self.Config.model is None:
+        if not hasattr(self.Config, "model"):
             raise ValueError("Model is None, set model in Config")
         return self.Config.model
 
@@ -89,7 +89,7 @@ class BaseRepositoryMotor(RepositoryInterface):
 
     @property
     def collection(self):
-        if self.Config.collection is None:
+        if not hasattr(self.Config, "collection"):
             raise ValueError("Collection is None, set collection in Config")
         return self.Config.collection
 

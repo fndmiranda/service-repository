@@ -100,7 +100,7 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
 
     @property
     def model(self):
-        if self.Config.model is None:
+        if not hasattr(self.Config, "model"):
             raise ValueError("Model is None, set model in Config")
         return self.Config.model
 
