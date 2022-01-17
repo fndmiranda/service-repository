@@ -57,13 +57,15 @@ class BaseRepositoryMotor(RepositoryInterface):
         total = await collection.count_documents(kwargs)
         return total
 
-    async def paginate(self, page: int = 1, per_page: int = 15, **kwargs):
+    async def paginate(
+        self, page: int = 1, per_page: int = 15, criteria: dict = {}
+    ):
         """Get collection of instances paginated by filter."""
         collection = self.db.get_collection(self.collection)
-        total = await collection.count_documents(kwargs)
+        total = await collection.count_documents(criteria)
 
         items = (
-            await collection.find(**kwargs)
+            await collection.find(criteria)
             .skip(per_page * (page - 1))
             .to_list(per_page)
         )

@@ -59,6 +59,30 @@ async def test_product_service_get_product_paginate(
 
 
 @pytest.mark.asyncio
+async def test_product_service_get_filtered_product_paginate(
+    app, motor, product_data_one
+):
+    count = 5
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    pagination = await ProductService(db=motor).paginate(
+        page=1, per_page=5, criteria={"title": "Product title 1"}
+    )
+
+    assert len(pagination["items"]) == 1
+    assert pagination["total"] == 1
+
+
+@pytest.mark.asyncio
 async def test_product_service_delete_product(app, motor, product_one):
     await ProductService(db=motor).delete(_id=product_one.id)
     product = await ProductService(db=motor).get(_id=product_one.id)

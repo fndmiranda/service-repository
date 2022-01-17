@@ -211,14 +211,16 @@ class BaseService(ServiceInterface):
             )
             raise exc
 
-    async def paginate(self, page: int = 1, per_page: int = 15, **kwargs):
+    async def paginate(
+        self, page: int = 1, per_page: int = 15, criteria: dict = {}
+    ):
         """Get collection of instances paginated by filter."""
         logger.info(
             "Starting paginate models with={}".format(
                 {
                     "service": type(self).__name__,
                     "repository": self.repository.__name__,
-                    "kwargs": kwargs,
+                    "criteria": criteria,
                     "page": page,
                     "per_page": per_page,
                 }
@@ -228,13 +230,14 @@ class BaseService(ServiceInterface):
             pagination = await self.repository(db=self.db).paginate(
                 page=page,
                 per_page=per_page,
+                criteria=criteria,
             )
             logger.info(
                 "Models paginate successfully with={}".format(
                     {
                         "service": type(self).__name__,
                         "repository": self.repository.__name__,
-                        "kwargs": kwargs,
+                        "criteria": criteria,
                         "items": len(pagination["items"]),
                         "per_page": pagination["per_page"],
                         "num_pages": pagination["num_pages"],
@@ -248,9 +251,10 @@ class BaseService(ServiceInterface):
             logger.error(
                 "Error on paginate models with={}".format(
                     {
+                        "error": str(exc),
                         "service": type(self).__name__,
                         "repository": self.repository.__name__,
-                        "kwargs": kwargs,
+                        "criteria": criteria,
                         "page": page,
                         "per_page": per_page,
                     }
