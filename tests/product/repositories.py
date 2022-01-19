@@ -5,6 +5,5 @@ from tests.product.models import Product
 class ProductRepository(BaseRepositoryMotor):
     """Class representing the product repository."""
 
-    class Config:
-        model = Product
-        collection = "product"
+    model = Product
+    collection = "product"

@@ -9,9 +9,8 @@ from service_repository.interfaces.repository import RepositoryInterface
 class BaseRepositoryMotor(RepositoryInterface):
     """Class representing the motor abstract repository."""
 
-    class Config:
-        model = None
-        collection = None
+    _model = None
+    _collection = None
 
     def __init__(self, db: AsyncIOMotorDatabase) -> None:
         self.db: AsyncIOMotorDatabase = db
@@ -58,17 +57,28 @@ class BaseRepositoryMotor(RepositoryInterface):
         return total
 
     async def paginate(
-        self, page: int = 1, per_page: int = 15, criteria: dict = {}
+        self,
+        page: int = 1,
+        per_page: int = 15,
+        criteria: dict = {},
+        sort: list = [],
     ):
         """Get collection of instances paginated by filter."""
         collection = self.db.get_collection(self.collection)
         total = await collection.count_documents(criteria)
 
-        items = (
-            await collection.find(criteria)
-            .skip(per_page * (page - 1))
-            .to_list(per_page)
-        )
+        # items = (
+        #     await collection.find(criteria)
+        #     .skip(per_page * (page - 1))
+        #     .to_list(per_page)
+        # )
+
+        # if sort:
+        #     items = items.sort(sort)
+        #
+        items = collection.find(criteria).sort([("title", -1)])
+
+        items = await items.to_list(per_page)
 
         response = {
             "items": [self.model(**item) for item in items],
@@ -80,21 +90,21 @@ class BaseRepositoryMotor(RepositoryInterface):
         return response
 
     @property
-    def model(self) -> BaseModel:
-        if not hasattr(self.Config, "model"):
-            raise ValueError("Model is None, set model in Config")
-        return self.Config.model
+    def model(self):
+        if self._model is None:
+            raise ValueError("Model is None, set the model")
+        return self._model
 
     @model.setter
     def model(self, value):
-        self.Config.model = value
+        self._model = value
 
     @property
     def collection(self):
-        if not hasattr(self.Config, "collection"):
-            raise ValueError("Collection is None, set collection in Config")
-        return self.Config.collection
+        if self._collection is None:
+            raise ValueError("Collection is None, set the collection")
+        return self._collection
 
     @collection.setter
     def collection(self, value):
-        self.Config.collection = value
+        self._collection = value

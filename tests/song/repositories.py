@@ -5,5 +5,4 @@ from tests.song.models import Song
 class SongRepository(BaseRepositorySqlalchemy):
     """Class representing the song repository."""
 
-    class Config:
-        model = Song
+    model = Song

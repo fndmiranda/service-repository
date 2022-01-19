@@ -69,7 +69,7 @@ async def apply_pagination(
     stmt = _limit(stmt, page_size)
 
     # Page size defaults to total results
-    if page_size is None or (page_size > total_results and total_results > 0):
+    if page_size is None:
         page_size = total_results
 
     stmt = _offset(stmt, page_number, page_size)

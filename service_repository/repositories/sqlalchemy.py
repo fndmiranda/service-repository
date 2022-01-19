@@ -5,8 +5,10 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from service_repository.filters.filters import apply_filters
+from service_repository.filters.pagination import apply_pagination
+from service_repository.filters.sorting import apply_sort
 from service_repository.interfaces.repository import RepositoryInterface
-from service_repository.pagination import apply_pagination
 
 logger = logging.getLogger(__name__)
 
@@ -14,8 +16,8 @@ logger = logging.getLogger(__name__)
 class BaseRepositorySqlalchemy(RepositoryInterface):
     """Class representing the SQLAlchemy abstract repository."""
 
-    class Config:
-        model = None
+    _model = None
+    max_per_page = 25
 
     def __init__(self, db: AsyncSession) -> None:
         self.db: AsyncSession = db
@@ -63,19 +65,33 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
 
         stmt = select(self.model)
 
-        query_count = await self.db.execute(
+        count = await self.db.execute(
             stmt.with_only_columns(func.count(primary_key))
         )
 
-        total = query_count.scalar_one()
+        total = count.scalar_one()
         return total
 
-    async def paginate(self, page: int = 1, per_page: int = 15, **kwargs):
+    async def paginate(
+        self,
+        page: int = 1,
+        per_page: int = 15,
+        criteria: dict = {},
+        sort: list = [],
+    ):
         """Get collection of instances paginated by filter."""
-        stmt = select(self.model)
-
         if per_page == -1:
             per_page = None
+        elif per_page > self.max_per_page:
+            per_page = self.max_per_page
+
+        stmt = select(self.model)
+
+        if criteria:
+            stmt = apply_filters(stmt, criteria)
+
+        if sort:
+            stmt = apply_sort(stmt, sort)
 
         stmt, pagination = await apply_pagination(
             stmt,
@@ -90,7 +106,7 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
 
         response = {
             "items": query.scalars().all(),
-            "per_page": pagination.page_size,
+            "per_page": per_page,
             "num_pages": pagination.num_pages,
             "page": pagination.page_number,
             "total": pagination.total_results,
@@ -100,10 +116,10 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
 
     @property
     def model(self):
-        if not hasattr(self.Config, "model"):
-            raise ValueError("Model is None, set model in Config")
-        return self.Config.model
+        if self._model is None:
+            raise ValueError("Model is None, set the model")
+        return self._model
 
     @model.setter
     def model(self, value):
-        self.Config.model = value
+        self._model = value
