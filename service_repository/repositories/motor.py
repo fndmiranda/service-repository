@@ -66,17 +66,10 @@ class BaseRepositoryMotor(RepositoryInterface):
         """Get collection of instances paginated by filter."""
         collection = self.db.get_collection(self.collection)
         total = await collection.count_documents(criteria)
+        items = collection.find(criteria)
 
-        # items = (
-        #     await collection.find(criteria)
-        #     .skip(per_page * (page - 1))
-        #     .to_list(per_page)
-        # )
-
-        # if sort:
-        #     items = items.sort(sort)
-        #
-        items = collection.find(criteria).sort([("title", -1)])
+        if sort:
+            items = items.sort(sort)
 
         items = await items.to_list(per_page)
 
