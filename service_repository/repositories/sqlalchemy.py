@@ -1,30 +1,36 @@
+import logging
+
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from service_repository.filters.filters import apply_filters
+from service_repository.filters.pagination import apply_pagination
+from service_repository.filters.sorting import apply_sort
 from service_repository.interfaces.repository import RepositoryInterface
-from service_repository.pagination import apply_pagination
+
+logger = logging.getLogger(__name__)
 
 
-class RepositorySqlalchemy(RepositoryInterface):
+class BaseRepositorySqlalchemy(RepositoryInterface):
     """Class representing the SQLAlchemy abstract repository."""
 
     _model = None
+    max_per_page = 25
 
     def __init__(self, db: AsyncSession) -> None:
         self.db: AsyncSession = db
 
-    async def create(self, schema_in: BaseModel):
+    async def create(self, schema_in: dict):
         """Create new object and returns the saved object instance."""
         instance = self.model(**schema_in)
-
         self.db.add(instance)
         await self.db.commit()
         await self.db.refresh(instance)
         return instance
 
-    async def update(self, instance: BaseModel, schema_in: BaseModel):
+    async def update(self, instance: BaseModel, schema_in: dict):
         """Update a instance."""
         data = instance.dict()
 
@@ -33,7 +39,6 @@ class RepositorySqlalchemy(RepositoryInterface):
                 setattr(instance, field, schema_in[field])
 
         await self.db.commit()
-
         return instance
 
     async def get(self, **kwargs):
@@ -42,7 +47,8 @@ class RepositorySqlalchemy(RepositoryInterface):
         instance = query.scalar_one_or_none()
         await self.db.commit()
 
-        return instance
+        if instance:
+            return instance
 
     async def delete(self, **kwargs):
         """Delete one instance by filter."""
@@ -59,20 +65,33 @@ class RepositorySqlalchemy(RepositoryInterface):
 
         stmt = select(self.model)
 
-        query_count = await self.db.execute(
+        count = await self.db.execute(
             stmt.with_only_columns(func.count(primary_key))
         )
 
-        total = query_count.scalar_one()
-
+        total = count.scalar_one()
         return total
 
-    async def paginate(self, page: int = 1, per_page: int = 15):
-        """Get collection of instances paginated."""
-        stmt = select(self.model)
-
+    async def paginate(
+        self,
+        page: int = 1,
+        per_page: int = 15,
+        criteria: dict = {},
+        sort: list = [],
+    ):
+        """Get collection of instances paginated by filter."""
         if per_page == -1:
             per_page = None
+        elif per_page > self.max_per_page:
+            per_page = self.max_per_page
+
+        stmt = select(self.model)
+
+        if criteria:
+            stmt = apply_filters(stmt, criteria)
+
+        if sort:
+            stmt = apply_sort(stmt, sort)
 
         stmt, pagination = await apply_pagination(
             stmt,
@@ -85,18 +104,20 @@ class RepositorySqlalchemy(RepositoryInterface):
         query = await self.db.execute(stmt)
         await self.db.commit()
 
-        return {
+        response = {
             "items": query.scalars().all(),
-            "per_page": pagination.page_size,
+            "per_page": per_page,
             "num_pages": pagination.num_pages,
             "page": pagination.page_number,
             "total": pagination.total_results,
         }
 
+        return response
+
     @property
     def model(self):
         if self._model is None:
-            raise ValueError("Model is required, set _model")
+            raise ValueError("Model is None, set the model")
         return self._model
 
     @model.setter

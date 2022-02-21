@@ -7,14 +7,14 @@ class RepositoryInterface(metaclass=ABCMeta):
     """Class representing the repository interface."""
 
     @abstractmethod
-    async def create(self, schema_in: BaseModel):
+    async def create(self, schema_in: dict):
         """
         Create new entity and returns the saved instance.
         """
         raise NotImplementedError()
 
     @abstractmethod
-    async def update(self, instance: BaseModel, schema_in: BaseModel):
+    async def update(self, instance: BaseModel, schema_in: dict):
         """Updates an entity and returns the saved instance."""
         raise NotImplementedError()
 

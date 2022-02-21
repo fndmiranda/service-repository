@@ -37,7 +37,7 @@ async def test_song_service_get_song(app, sqlalchemy, song_one):
 
 
 @pytest.mark.asyncio
-async def test_song_service_get_song_paginate(app, sqlalchemy, song_data_one):
+async def test_song_service_paginate_song(app, sqlalchemy, song_data_one):
     count = 15
     async with sqlalchemy() as session:
         for item in range(count):
@@ -59,6 +59,144 @@ async def test_song_service_get_song_paginate(app, sqlalchemy, song_data_one):
     assert pagination["num_pages"] == 3
     assert pagination["page"] == 1
     assert pagination["total"] == 15
+
+
+@pytest.mark.asyncio
+async def test_song_service_with_filter_paginate_song(
+    app, sqlalchemy, song_data_one
+):
+    count = 15
+    criteria = [{"field": "title", "op": "ilike", "value": "Song title 1"}]
+
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        pagination = await SongService(db=session).paginate(
+            page=1, per_page=5, criteria=criteria
+        )
+
+    assert pagination["per_page"] == 5
+    assert len(pagination["items"]) == 1
+    assert pagination["num_pages"] == 1
+    assert pagination["page"] == 1
+    assert pagination["total"] == 1
+
+
+@pytest.mark.asyncio
+async def test_song_service_with_or_filter_paginate_song(
+    app, sqlalchemy, song_data_one
+):
+    count = 15
+
+    criteria = {
+        "or": [
+            {"field": "title", "op": "==", "value": "Song title 2"},
+            {"field": "title", "op": "==", "value": "Song title 3"},
+        ]
+    }
+
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        pagination = await SongService(db=session).paginate(
+            page=1, per_page=5, criteria=criteria
+        )
+
+    assert pagination["per_page"] == 5
+    assert len(pagination["items"]) == 2
+    assert pagination["num_pages"] == 1
+    assert pagination["page"] == 1
+    assert pagination["total"] == 2
+
+
+@pytest.mark.asyncio
+async def test_song_service_with_or_and_asc_filter_paginate_song(
+    app, sqlalchemy, song_data_one
+):
+    count = 15
+    criteria = {
+        "or": [
+            {"field": "title", "op": "==", "value": "Song title 2"},
+            {"field": "title", "op": "==", "value": "Song title 3"},
+        ]
+    }
+    sort = [
+        {"field": "title", "direction": "asc"},
+    ]
+
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        pagination = await SongService(db=session).paginate(
+            page=1, per_page=5, criteria=criteria, sort=sort
+        )
+
+    assert pagination["items"][0].title == "Song title 2"
+
+
+@pytest.mark.asyncio
+async def test_song_service_with_or_and_desc_filter_paginate_song(
+    app, sqlalchemy, song_data_one
+):
+    count = 15
+    criteria = {
+        "or": [
+            {"field": "title", "op": "==", "value": "Song title 2"},
+            {"field": "title", "op": "==", "value": "Song title 3"},
+        ]
+    }
+    sort = [
+        {"field": "title", "direction": "desc"},
+    ]
+
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        pagination = await SongService(db=session).paginate(
+            page=1, per_page=5, criteria=criteria, sort=sort
+        )
+
+    assert pagination["items"][0].title == "Song title 3"
 
 
 @pytest.mark.asyncio
@@ -89,12 +227,3 @@ async def test_song_service_count_song(app, sqlalchemy, song_data_one):
         total = await SongService(db=session).count()
 
     assert total == count
-
-
-@pytest.mark.asyncio
-async def test_song_service_without_repository(app, sqlalchemy, song_one):
-    async with sqlalchemy() as session:
-        service = SongService(db=session)
-        service.repository = None
-        with pytest.raises(ValueError):
-            await service.get(id=song_one.id)
