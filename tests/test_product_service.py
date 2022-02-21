@@ -34,9 +34,7 @@ async def test_product_service_get_product(app, motor, product_one):
 
 
 @pytest.mark.asyncio
-async def test_product_service_get_product_paginate(
-    app, motor, product_data_one
-):
+async def test_product_service_paginate_product(app, motor, product_data_one):
     count = 15
     for item in range(count):
         product_data_one.update(
@@ -56,6 +54,83 @@ async def test_product_service_get_product_paginate(
     assert pagination["num_pages"] == 3
     assert pagination["page"] == 1
     assert pagination["total"] == 15
+
+
+@pytest.mark.asyncio
+async def test_product_service_with_filter_paginate_product(
+    app, motor, product_data_one
+):
+    count = 5
+    criteria = {"title": "Product title 1"}
+
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    pagination = await ProductService(db=motor).paginate(
+        page=1, per_page=5, criteria=criteria
+    )
+
+    assert len(pagination["items"]) == 1
+    assert pagination["total"] == 1
+
+
+@pytest.mark.asyncio
+async def test_product_service_with_or_and_asc_filter_paginate_product(
+    app, motor, product_data_one
+):
+    count = 5
+    criteria = {"title": "Product title 1"}
+
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    pagination = await ProductService(db=motor).paginate(
+        page=1, per_page=5, criteria=criteria
+    )
+
+    assert len(pagination["items"]) == 1
+    assert pagination["total"] == 1
+
+
+@pytest.mark.asyncio
+async def test_product_service_with_sort_desc_paginate_product(
+    app, motor, product_data_one
+):
+    count = 5
+    sort = [("title", -1)]
+
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    pagination = await ProductService(db=motor).paginate(
+        page=1, per_page=5, sort=sort
+    )
+
+    assert pagination["items"][0].title == "Product title 4"
 
 
 @pytest.mark.asyncio
