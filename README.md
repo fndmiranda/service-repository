@@ -5,6 +5,18 @@ Simple service layer with repository to SQLAlchemy with SQLModel or MongoDB with
 Inherit the usual service methods:
 `pagination`, `create`, `get`, `update`, `delete`, `count`
 
+## Installation
+
+<div class="termy">
+
+```console
+$ pip install service-repository
+
+---> 100%
+```
+
+</div>
+
 ## With SQLAlchemy
 
 Create the model, as in the example [song/models.py](tests/song/models.py)
