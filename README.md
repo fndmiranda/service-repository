@@ -1,6 +1,6 @@
-# Service layer and repository for SQLAlchemy or MongoDB (asynchronous)
+# Abstract service layer built into the repository pattern for SQLAlchemy or MongoDB (asynchronous)
 
-Simple service layer with repository to SQLAlchemy with SQLModel or MongoDB with Motor.
+Asynchronous abstract methods for service layer built into the repository pattern for SQLAlchemy or MongoDB with the same service layer.
 
 Inherit the usual service methods:
 `pagination`, `create`, `get`, `update`, `delete`, `count`
