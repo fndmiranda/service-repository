@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "service-repository"
-version = "0.1.2"
-description = "Simple service layer with repository to SQLAlchemy or MongoDB"
+version = "0.1.3"
+description = "Asynchronous abstract methods for service layer built into the repository pattern for SQLAlchemy or MongoDB with the same service layer."
 authors = ["Fernando Miranda <fndmiranda@gmail.com>"]
 license = "MIT"
 readme = "README.md"
