@@ -66,7 +66,7 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
         stmt = select(self.model)
 
         count = await self.db.execute(
-            stmt.with_only_columns(func.count(primary_key))
+            stmt.with_only_columns(func.count(primary_key)).filter_by(**kwargs)
         )
 
         total = count.scalar_one()
