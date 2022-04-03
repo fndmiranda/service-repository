@@ -22,15 +22,18 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
     def __init__(self, db: AsyncSession) -> None:
         self.db: AsyncSession = db
 
-    async def create(self, schema_in: dict):
+    async def create(self, schema_in: dict, autocommit: bool = True):
         """Create new object and returns the saved object instance."""
         instance = self.model(**schema_in)
         self.db.add(instance)
-        await self.db.commit()
-        await self.db.refresh(instance)
+        if autocommit:
+            await self.db.commit()
+            await self.db.refresh(instance)
         return instance
 
-    async def update(self, instance: BaseModel, schema_in: dict):
+    async def update(
+        self, instance: BaseModel, schema_in: dict, autocommit: bool = True
+    ):
         """Update a instance."""
         data = instance.dict()
 
@@ -38,7 +41,8 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
             if field in schema_in:
                 setattr(instance, field, schema_in[field])
 
-        await self.db.commit()
+        if autocommit:
+            await self.db.commit()
         return instance
 
     async def get(self, **kwargs):
