@@ -57,6 +57,46 @@ async def test_product_service_paginate_product(app, motor, product_data_one):
 
 
 @pytest.mark.asyncio
+async def test_product_service_get_all_products(app, motor, product_data_one):
+    count = 15
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    products = await ProductService(db=motor).all()
+
+    assert len(products) == count
+
+
+@pytest.mark.asyncio
+async def test_product_service_get_all_products_with_filter(
+    app, motor, product_data_one
+):
+    count = 15
+    for item in range(count):
+        product_data_one.update(
+            {
+                "title": f"Product title {item}",
+            }
+        )
+
+        await ProductService(db=motor).create(
+            schema_in=ProductCreate(**product_data_one)
+        )
+
+    products = await ProductService(db=motor).all(title="Product title 1")
+
+    assert len(products) == 1
+
+
+@pytest.mark.asyncio
 async def test_product_service_with_filter_paginate_product(
     app, motor, product_data_one
 ):

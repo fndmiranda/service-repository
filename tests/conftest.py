@@ -1,7 +1,7 @@
 import asyncio
 from typing import Generator
 
-import pytest
+import pytest_asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,7 +10,7 @@ from sqlmodel import SQLModel
 pytest_plugins = ["tests.fixtures"]
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
 
@@ -20,7 +20,7 @@ def event_loop(request):
         loop.close()
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def motor():
     client = AsyncIOMotorClient(
         "localhost",
@@ -33,7 +33,7 @@ async def motor():
     yield session
 
 
-@pytest.fixture()
+@pytest_asyncio.fixture()
 async def sqlalchemy():
     SQLALCHEMY_DATABASE_URI = "sqlite+aiosqlite:///./tests/testing.db"
 
@@ -50,7 +50,7 @@ async def sqlalchemy():
         await conn.run_sync(SQLModel.metadata.drop_all)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def app(event_loop) -> Generator:
     app = {}
     yield app

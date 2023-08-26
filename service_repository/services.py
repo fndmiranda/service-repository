@@ -269,6 +269,43 @@ class BaseService(ServiceInterface):
             )
             raise exc
 
+    async def all(self, **kwargs):
+        """Get all instances by filter."""
+        logger.info(
+            "Starting get models by filter with={}".format(
+                {
+                    "service": type(self).__name__,
+                    "repository": self.repository.__name__,
+                    "kwargs": kwargs,
+                }
+            )
+        )
+        try:
+            instances = await self.repository(db=self.db).all(**kwargs)
+            logger.info(
+                "Models got successfully by filter with={}".format(
+                    {
+                        "service": type(self).__name__,
+                        "repository": self.repository.__name__,
+                        "kwargs": kwargs,
+                        "instances": len(instances),
+                    }
+                )
+            )
+            return instances
+        except Exception as exc:
+            logger.error(
+                "Error on get models by filter with={}".format(
+                    {
+                        "service": type(self).__name__,
+                        "repository": self.repository.__name__,
+                        "error": str(exc),
+                        "kwargs": kwargs,
+                    }
+                )
+            )
+            raise exc
+
     @property
     def repository(self):
         if self._repository is None:
