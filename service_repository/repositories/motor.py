@@ -56,6 +56,14 @@ class BaseRepositoryMotor(RepositoryInterface):
         total = await collection.count_documents(kwargs)
         return total
 
+    async def all(self, **kwargs):
+        """Count instances by filter."""
+        collection = self.db.get_collection(self.collection)
+        total = await collection.count_documents(kwargs)
+        items = collection.find(kwargs)
+        instances = await items.to_list(total)
+        return instances
+
     async def paginate(
         self,
         page: int = 1,

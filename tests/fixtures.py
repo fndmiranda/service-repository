@@ -1,4 +1,4 @@
-import pytest
+import pytest_asyncio
 
 from tests.product.models import ProductCreate
 from tests.product.services import ProductService
@@ -6,7 +6,7 @@ from tests.song.models import SongCreate
 from tests.song.services import SongService
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def song_data_one():
     return {
         "title": "Song title 1",
@@ -14,7 +14,7 @@ def song_data_one():
     }
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def song_data_two():
     return {
         "title": "Song title 2",
@@ -22,7 +22,7 @@ def song_data_two():
     }
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def song_one(sqlalchemy, song_data_one):
     async with sqlalchemy() as session:
         song = await SongService(db=session).create(
@@ -31,7 +31,7 @@ async def song_one(sqlalchemy, song_data_one):
     return song
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def product_data_one():
     return {
         "title": "Product title 1",
@@ -39,7 +39,7 @@ def product_data_one():
     }
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def product_data_two():
     return {
         "title": "Product title 2",
@@ -47,7 +47,7 @@ def product_data_two():
     }
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def product_one(motor, product_data_one):
     product = await ProductService(db=motor).create(
         schema_in=ProductCreate(**product_data_one)

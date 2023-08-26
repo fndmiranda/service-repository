@@ -200,6 +200,50 @@ async def test_song_service_with_or_and_desc_filter_paginate_song(
 
 
 @pytest.mark.asyncio
+async def test_song_service_get_all_songs(app, sqlalchemy, song_data_one):
+    count = 5
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        songs = await SongService(db=session).all()
+
+    assert len(songs) == count
+
+
+@pytest.mark.asyncio
+async def test_song_service_get_all_songs_with_filter(
+    app, sqlalchemy, song_data_one
+):
+    count = 5
+    async with sqlalchemy() as session:
+        for item in range(count):
+            song_data_one.update(
+                {
+                    "title": f"Song title {item}",
+                }
+            )
+
+            await SongService(db=session).create(
+                schema_in=SongCreate(**song_data_one)
+            )
+
+    async with sqlalchemy() as session:
+        songs = await SongService(db=session).all(title="Song title 1")
+
+    assert len(songs) == 1
+
+
+@pytest.mark.asyncio
 async def test_song_service_delete_song(app, sqlalchemy, song_one):
     async with sqlalchemy() as session:
         await SongService(db=session).delete(id=song_one.id)

@@ -24,7 +24,6 @@ Sqlalchemy boolean functions that can be parsed from the filter definition.
 
 
 class Operator(object):
-
     OPERATORS = {
         "is_null": lambda f: f.is_(None),
         "is_not_null": lambda f: f.isnot(None),

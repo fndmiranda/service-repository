@@ -54,27 +54,12 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
         if instance:
             return instance
 
-    async def delete(self, **kwargs):
-        """Delete one instance by filter."""
-        instance = await self.get(**kwargs)
-        await self.db.delete(instance)
+    async def all(self, **kwargs):
+        """Get all instances by filter."""
+        query = await self.db.execute(select(self.model).filter_by(**kwargs))
+        instances = query.scalars().all()
         await self.db.commit()
-
-    async def count(self, **kwargs):
-        """Count instances by filter."""
-        primary_key = getattr(
-            self.model,
-            self.model.__table__.primary_key.columns_autoinc_first[0].name,
-        )
-
-        stmt = select(self.model)
-
-        count = await self.db.execute(
-            stmt.with_only_columns(func.count(primary_key)).filter_by(**kwargs)
-        )
-
-        total = count.scalar_one()
-        return total
+        return instances
 
     async def paginate(
         self,
@@ -117,6 +102,28 @@ class BaseRepositorySqlalchemy(RepositoryInterface):
         }
 
         return response
+
+    async def delete(self, **kwargs):
+        """Delete one instance by filter."""
+        instance = await self.get(**kwargs)
+        await self.db.delete(instance)
+        await self.db.commit()
+
+    async def count(self, **kwargs):
+        """Count instances by filter."""
+        primary_key = getattr(
+            self.model,
+            self.model.__table__.primary_key.columns_autoinc_first[0].name,
+        )
+
+        stmt = select(self.model)
+
+        count = await self.db.execute(
+            stmt.with_only_columns(func.count(primary_key)).filter_by(**kwargs)
+        )
+
+        total = count.scalar_one()
+        return total
 
     @property
     def model(self):
